@@ -6,7 +6,12 @@ var rows = 6
 var columns = 7
 var board = mutableListOf<MutableList<Char>>()
 var firstP = ""
+var firstScore = 0
+var secondScore = 0
 var secondP = ""
+var isGameFin = false
+var isFirst = true
+var nOfGames = ""
 
 fun main() {
     println("Connect Four")
@@ -15,11 +20,50 @@ fun main() {
     println("Second player's name:")
     secondP = readln()
     setBoardDim()
+    while (true) {
+        println("Do you want to play single or multiple games?")
+        println("For a single game, input 1 or press Enter")
+        println("Input a number of games:")
+        try {
+            nOfGames = readln()
+            if (nOfGames == "" || nOfGames == "1") {
+                nOfGames = "1"
+                break
+            }
+            if (nOfGames.toInt() < 1) {
+                println("Invalid input")
+            } else {
+                break
+            }
+        } catch (e: Exception) {
+            println("Invalid input")
+        }
+    }
     println("$firstP VS $secondP")
     println("$rows X $columns board")
-    board = MutableList(rows) { MutableList(columns) { ' ' } }
-    printBoard()
-    play()
+    if (nOfGames.toInt() > 1) {
+        println("Total ${nOfGames.toInt()} games")
+    }
+
+
+    var gameNo = 1
+    repeat(nOfGames.toInt()) {
+        isGameFin = false
+        if (nOfGames.toInt() == 1) {
+            println("Single game")
+        } else {
+            println("Game #$gameNo")
+        }
+        board = MutableList(rows) { MutableList(columns) { ' ' } }
+        printBoard()
+        play()
+        if (nOfGames.toInt() != 1) {
+            println("Score")
+            println("$firstP: $firstScore $secondP: $secondScore")
+        }
+        gameNo++
+    }
+    println("Game over!")
 }
 
 fun setBoardDim() {
@@ -71,10 +115,10 @@ fun printBoard() {
 }
 
 fun play() {
-    var isFirst = true
+
     var disk = ' '
     var column = 0
-    while (true) {
+    while (true && !isGameFin) {
         if (isFirst) {
             println("$firstP's turn:")
             disk = 'o'
@@ -114,10 +158,10 @@ fun play() {
 }
 
 fun checkCondition() {
-    var lines = mutableListOf<String>()
+    val lines = mutableListOf<String>()
     var line = ""
     if (board.any { it.contains(' ') }) {
-        for (i in 0 until rows) {
+        l00ps@ for (i in 0 until rows) {
             for (y in 0 until columns) {
                 try {
                     line = "${board[i - 3][y]}${board[i - 2][y]}${board[i - 1][y]}${board[i][y]}"
@@ -161,18 +205,21 @@ fun checkCondition() {
                 }
                 if (lines.contains("oooo")) {
                     println("Player $firstP won")
-                    println("Game over!")
-                    exitProcess(0)
+                    isGameFin = true
+                    firstScore += 2
+                    l00ps@ return
                 } else if (lines.contains("****")) {
                     println("Player $secondP won")
-                    println("Game over!")
-                    exitProcess(0)
+                    isGameFin = true
+                    secondScore += 2
+                    l00ps@ return
                 }
             }
         }
     } else {
         println("It is a draw")
-        println("Game over!")
-        exitProcess(0)
+        isGameFin = true
+        firstScore += 1
+        secondScore += 1
     }
 }
