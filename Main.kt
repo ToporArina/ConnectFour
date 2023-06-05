@@ -52,7 +52,7 @@ fun setBoardDim() {
 
 fun printBoard() {
     for (i in 0 until columns) {
-        print(" ${i+1}")
+        print(" ${i + 1}")
     }
     println()
     for (i in 0 until rows) {
@@ -63,7 +63,7 @@ fun printBoard() {
         println()
     }
     print("=")
-    for(i in 0 until columns - 1) {
+    for (i in 0 until columns - 1) {
         print("==")
     }
     print("==")
@@ -92,22 +92,87 @@ fun play() {
             if (column > columns || column < 1) {
                 println("The column number is out of range (1 - $columns)")
                 continue
-            } else if (board[0][column-1] != ' ') {
+            } else if (board[0][column - 1] != ' ') {
                 println("Column $column is full")
                 continue
             } else {
-                for (i in rows - 1 downTo   0 ) {
-                    if (board[i][column-1] == ' ') {
-                        board[i][column-1] = disk
+                for (i in rows - 1 downTo 0) {
+                    if (board[i][column - 1] == ' ') {
+                        board[i][column - 1] = disk
                         isFirst = !isFirst
                         printBoard()
+                        checkCondition()
                         break
                     }
                 }
             }
-        } catch (e:Exception) {
+        } catch (e: Exception) {
             println("Incorrect column number")
             continue
         }
+    }
+}
+
+fun checkCondition() {
+    var lines = mutableListOf<String>()
+    var line = ""
+    if (board.any { it.contains(' ') }) {
+        for (i in 0 until rows) {
+            for (y in 0 until columns) {
+                try {
+                    line = "${board[i - 3][y]}${board[i - 2][y]}${board[i - 1][y]}${board[i][y]}"
+                    lines.add(line)
+                } catch (_: Exception) {
+                }
+                try {
+                    line = "${board[i + 3][y]}${board[i + 2][y]}${board[i + 1][y]}${board[i][y]}"
+                    lines.add(line)
+                } catch (_: Exception) {
+                }
+                try {
+                    line = "${board[i][y - 3]}${board[i][y - 2]}${board[i][y - 1]}${board[i][y]}"
+                    lines.add(line)
+                } catch (_: Exception) {
+                }
+                try {
+                    line = "${board[i][y + 3]}${board[i][y + 2]}${board[i][y + 1]}${board[i][y]}"
+                    lines.add(line)
+                } catch (_: Exception) {
+                }
+                try {
+                    line = "${board[i + 3][y + 3]}${board[i + 2][y + 2]}${board[i + 1][y + 1]}${board[i][y]}"
+                    lines.add(line)
+                } catch (_: Exception) {
+                }
+                try {
+                    line = "${board[i - 3][y - 3]}${board[i - 2][y - 2]}${board[i - 1][y - 1]}${board[i][y]}"
+                    lines.add(line)
+                } catch (_: Exception) {
+                }
+                try {
+                    line = "${board[i + 3][y - 3]}${board[i + 2][y - 2]}${board[i + 1][y - 1]}${board[i][y]}"
+                    lines.add(line)
+                } catch (_: Exception) {
+                }
+                try {
+                    line = "${board[i - 3][y + 3]}${board[i - 2][y + 2]}${board[i - 1][y + 1]}${board[i][y]}"
+                    lines.add(line)
+                } catch (_: Exception) {
+                }
+                if (lines.contains("oooo")) {
+                    println("Player $firstP won")
+                    println("Game over!")
+                    exitProcess(0)
+                } else if (lines.contains("****")) {
+                    println("Player $secondP won")
+                    println("Game over!")
+                    exitProcess(0)
+                }
+            }
+        }
+    } else {
+        println("It is a draw")
+        println("Game over!")
+        exitProcess(0)
     }
 }
